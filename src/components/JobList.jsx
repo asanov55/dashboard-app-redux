@@ -1,22 +1,17 @@
-import {useSelector, useDispatch} from 'react-redux';
+import { connect } from 'react-redux';
 import { JobPosition } from './JobPosition';
-import {selectVisiblePositions} from 'store/positions/position-selectors';
-import {selectFitlers} from 'store/filters/filter-selectors';
+import { selectVisiblePositions } from 'store/positions/position-selectors';
 
-import {addFilter} from 'store/filters/filter-actions';
+import { addFilter } from 'store/filters/filter-actions';
 
-const JobList = () => {
-  const dispatch = useDispatch();
-  const currentFitlers = useSelector(selectFitlers);
-  const positions = useSelector((state) => selectVisiblePositions(state, currentFitlers));
-
+const _JobList = ({ positions, addFilter }) => {
   const handleAddFilter = (filter) => {
-    dispatch(addFilter(filter));
+    addFilter(filter);
   };
 
   return (
-    <div className='job-list'>
-      {positions.map(item => (
+    <div className="job-list">
+      {positions.map((item) => (
         <JobPosition
           key={item.id}
           handleAddFilter={handleAddFilter}
@@ -24,7 +19,15 @@ const JobList = () => {
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
-export {JobList};
+const mapStateToProps = (state) => ({
+  positions: selectVisiblePositions(state, state.filters),
+});
+
+const JobList = connect(mapStateToProps, {
+  addFilter,
+})(_JobList);
+
+export { JobList };
